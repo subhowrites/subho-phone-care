@@ -1523,7 +1523,7 @@ body.product-details-page .back-nav a:active {
 
 /* ===== NEW PRODUCT DETAIL LAYOUT ===== */
 body.product-details-page .product-detail {
-    background: #ffffff;
+    background:rgba(255, 255, 255, 0.3);
     border-radius: 24px;
     padding: 24px;
     margin-bottom: 30px;

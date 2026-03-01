@@ -32,7 +32,7 @@
       "id": "64-4",
       "ram": "4 GB",
       "storage": "64 GB",
-      "price": 12999,
+      "price": 29999,
       "discount": 5,
       "available": true
     },
@@ -40,7 +40,7 @@
       "id": "128-4",
       "ram": "4 GB",
       "storage": "128 GB",
-      "price": 13999,
+      "price": 33999,
       "discount": 7,
       "available": true
     },
@@ -48,7 +48,7 @@
       "id": "128-6",
       "ram": "6 GB",
       "storage": "128 GB",
-      "price": 15999,
+      "price": 36999,
       "discount": 10,
       "available": true
     }
