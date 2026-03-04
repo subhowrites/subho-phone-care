@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         setTimeout(initCategoryBoxScroll, 500);
         
-        // ⭐ NEW: Initialize auto-scroll after everything is loaded
+        // ⭐ Initialize auto-scroll after everything is loaded
         setTimeout(() => {
             initCategoryAutoScroll();
             initCategoryBoxAutoScroll();
@@ -66,6 +66,8 @@ let currentVariantIndex = 0;
 // ===== AUTO-SCROLL VARIABLES =====
 let categoryScrollInterval = null;
 let categoryBoxScrollInterval = null;
+let categoryResumeTimeout = null;
+let categoryBoxResumeTimeout = null;
 
 // ===== CATEGORY BOX DATA =====
 const categoryBoxData = [
@@ -163,13 +165,13 @@ function initCategoryBoxScroll() {
     setTimeout(updateButtons, 100);
 }
 
-// ===== NEW: AUTO-SCROLL FOR CATEGORY CHIPS (All/Vivo/Oppo etc.) =====
+// ===== FIXED: AUTO-SCROLL FOR CATEGORY CHIPS (All/Vivo/Oppo etc.) =====
 function initCategoryAutoScroll() {
     const container = document.querySelector('.category-wrapper');
     if (!container) return;
     
     let isPaused = false;
-    const scrollSpeed = 0.5; // pixels per frame - धीमी गति
+    const scrollSpeed = 0.5;
     
     function startScroll() {
         if (categoryScrollInterval) clearInterval(categoryScrollInterval);
@@ -178,46 +180,44 @@ function initCategoryAutoScroll() {
             if (!isPaused && container) {
                 container.scrollLeft += scrollSpeed;
                 
-                // अगर end पर पहुंच गए तो start पर वापस जाओ
                 if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
                     container.scrollLeft = 0;
                 }
             }
-        }, 20); // 20ms = 50fps smooth animation
+        }, 20);
     }
     
-    // Touch events - pause on touch
-    container.addEventListener('touchstart', () => {
+    function pauseScroll() {
         isPaused = true;
-    }, { passive: true });
+        if (categoryResumeTimeout) clearTimeout(categoryResumeTimeout);
+    }
     
-    container.addEventListener('touchend', () => {
-        isPaused = false;
-    }, { passive: true });
+    function resumeScroll() {
+        if (categoryResumeTimeout) clearTimeout(categoryResumeTimeout);
+        categoryResumeTimeout = setTimeout(() => {
+            isPaused = false;
+        }, 2000); // 2 seconds ke baad resume
+    }
     
-    container.addEventListener('touchcancel', () => {
-        isPaused = false;
-    }, { passive: true });
+    // Touch events
+    container.addEventListener('touchstart', pauseScroll, { passive: true });
+    container.addEventListener('touchend', resumeScroll, { passive: true });
+    container.addEventListener('touchcancel', resumeScroll, { passive: true });
     
     // Mouse events for desktop
-    container.addEventListener('mouseenter', () => {
-        isPaused = true;
-    });
-    
-    container.addEventListener('mouseleave', () => {
-        isPaused = false;
-    });
+    container.addEventListener('mouseenter', pauseScroll);
+    container.addEventListener('mouseleave', resumeScroll);
     
     startScroll();
 }
 
-// ===== NEW: AUTO-SCROLL FOR CATEGORY BOXES (Phones/TV/AC etc.) =====
+// ===== FIXED: AUTO-SCROLL FOR CATEGORY BOXES (Phones/TV/AC etc.) =====
 function initCategoryBoxAutoScroll() {
     const container = document.querySelector('.category-box-container');
     if (!container) return;
     
     let isPaused = false;
-    const scrollSpeed = 0.7; // थोड़ा तेज़ क्योंकि boxes बड़े हैं
+    const scrollSpeed = 0.7;
     
     function startScroll() {
         if (categoryBoxScrollInterval) clearInterval(categoryBoxScrollInterval);
@@ -233,25 +233,24 @@ function initCategoryBoxAutoScroll() {
         }, 20);
     }
     
-    container.addEventListener('touchstart', () => {
+    function pauseScroll() {
         isPaused = true;
-    }, { passive: true });
+        if (categoryBoxResumeTimeout) clearTimeout(categoryBoxResumeTimeout);
+    }
     
-    container.addEventListener('touchend', () => {
-        isPaused = false;
-    }, { passive: true });
+    function resumeScroll() {
+        if (categoryBoxResumeTimeout) clearTimeout(categoryBoxResumeTimeout);
+        categoryBoxResumeTimeout = setTimeout(() => {
+            isPaused = false;
+        }, 2000);
+    }
     
-    container.addEventListener('touchcancel', () => {
-        isPaused = false;
-    }, { passive: true });
+    container.addEventListener('touchstart', pauseScroll, { passive: true });
+    container.addEventListener('touchend', resumeScroll, { passive: true });
+    container.addEventListener('touchcancel', resumeScroll, { passive: true });
     
-    container.addEventListener('mouseenter', () => {
-        isPaused = true;
-    });
-    
-    container.addEventListener('mouseleave', () => {
-        isPaused = false;
-    });
+    container.addEventListener('mouseenter', pauseScroll);
+    container.addEventListener('mouseleave', resumeScroll);
     
     startScroll();
 }
